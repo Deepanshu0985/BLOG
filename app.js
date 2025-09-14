@@ -4,6 +4,9 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const ejs = require("ejs");
 const mongoose = require('mongoose');
+// import { connectionState } from 'connection-state';
+
+// const connection = connectionState();
 
 const homeStartingContent = "Welcome to my personal blog! Here, I share my thoughts and experiences on various topics, including personal growth, mindfulness, travel, and more. Join me on this journey of self-discovery and exploration.";
 const aboutContent = "Welcome to my personal blog! Join me on a journey of self-discovery and exploration. I share my thoughts on personal growth, mindfulness, travel, and more.";
@@ -24,6 +27,10 @@ mongoose.connect(uri)
   .then(()=> console.log("mongoose connected"))
   .catch(err => console.error("mongoose connection error:", err));
 
+// connection.addListener((state) => {
+// 	console.log(`Your connection state has changed. You are now ${state}.`)
+// })
+
 const postSchema = {
   title: String,
   content: String
@@ -31,56 +38,67 @@ const postSchema = {
 
 const Post = mongoose.model("Post", postSchema);
 
-app.get("/", function(req, res){
-
-  Post.find({}, function(err, posts){
+app.get("/", async function (req, res) {
+  try {
+    const posts = await Post.find({});
     res.render("home", {
       startingContent: homeStartingContent,
       posts: posts
-      });
-  });
+    });
+  } catch (err) {
+    console.error("Error fetching posts:", err);
+    res.status(500).send("Error fetching posts");
+  }
 });
+
 
 app.get("/compose", function(req, res){
   res.render("compose");
 });
 
-app.post("/compose", function(req, res){
+app.post("/compose", async function (req, res) {
   const post = new Post({
     title: req.body.postTitle,
     content: req.body.postBody
   });
 
-
-  post.save(function(err){
-    if (!err){
-        res.redirect("/");
-    }
-  });
+  try {
+    await post.save();         // returns a promise
+    res.redirect("/");
+  } catch (err) {
+    console.error("Error saving post:", err);
+    res.status(500).send("Error saving post");
+  }
 });
 
-app.get("/posts/:postId", function(req, res){
 
-const requestedPostId = req.params.postId;
+app.get("/posts/:postId", async function (req, res) {
+  const requestedPostId = req.params.postId;
 
-  Post.findOne({_id: requestedPostId}, function(err, post){
+  try {
+    const post = await Post.findOne({ _id: requestedPostId });
+    if (!post) {
+      return res.status(404).send("Post not found");
+    }
     res.render("post", {
       title: post.title,
       content: post.content
     });
-  });
-
+  } catch (err) {
+    console.error("Error fetching post:", err);
+    res.status(500).send("Error fetching post");
+  }
 });
 
-app.get("/about", function(req, res){
-  res.render("about", {aboutContent: aboutContent});
+app.get("/about", function (req, res) {
+  res.render("about", { aboutContent: aboutContent });
 });
 
-app.get("/contact", function(req, res){
-  res.render("contact", {contactContent: contactContent});
+app.get("/contact", function (req, res) {
+  res.render("contact", { contactContent: contactContent });
 });
 
-
-app.listen(3000, function() {
+app.listen(3000, function () {
   console.log("Server started on port 3000");
 });
+
