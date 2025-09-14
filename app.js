@@ -15,8 +15,14 @@ app.set('view engine', 'ejs');
 
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(express.static("public"));
+const rawpass = "@Deepu0895.."
+const encpass = encodeURIComponent(rawpass);
 
-mongoose.connect("mongodb+srv://deepanshuy098:@Deepu0895..@blogapp.vjdq2ie.mongodb.net/BLOG", { useNewUrlParser: true, useUnifiedTopology: true });
+const uri = `mongodb+srv://deepanshuy098:${encpass}@ac-onzqgew.vjdq2ie.mongodb.net/BLOG?retryWrites=true&w=majority`;
+// mongoose.connect(uri, {useNewUrlParser: true, useUnifiedTopology: true});
+mongoose.connect(uri)
+  .then(()=> console.log("mongoose connected"))
+  .catch(err => console.error("mongoose connection error:", err));
 
 const postSchema = {
   title: String,
