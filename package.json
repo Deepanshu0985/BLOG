@@ -5,16 +5,17 @@
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-      "prestart": "ls -la node_modules/mongoose/lib | sed -n '1,200p'",
-      "start": "node app.js"
-    },
+    "prestart": "ls -la node_modules/mongoose/lib | sed -n '1,200p'",
+    "start": "node app.js"
+  },
   "author": "",
   "license": "ISC",
   "engines": {
-  "node": ">=18 <23"
+    "node": ">=18 <23"
   },
   "dependencies": {
     "body-parser": "^1.18.3",
+    "connection-state": "^0.1.0",
     "ejs": "^3.1.8",
     "express": "^4.16.3",
     "lodash": "^4.17.11",
