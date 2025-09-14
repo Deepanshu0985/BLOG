@@ -4,8 +4,10 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
+    "test": "echo \"Error: no test specified\" && exit 1",
+      "prestart": "ls -la node_modules/mongoose/lib | sed -n '1,200p'",
+      "start": "node app.js"
+    },
   "author": "",
   "license": "ISC",
   "engines": {
